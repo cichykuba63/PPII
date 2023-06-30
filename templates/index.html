@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="author" content="Jakub Słowiak" />
+		<meta name="keywords" content="Webscraper, CeneoWebscraper, CeneoProductOpinions" />
+		<meta
+			name="description"
+			content="Website which enables to download any opinion from Ceneo website and save it to a file." />
+		<title>Ceneo Webscraper</title>
+		<!-- fonts 300, 400 and 700 -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;700&display=swap" rel="stylesheet" />
+		<link rel="stylesheet" href={{ url_for('static', filename='main.css') }} />
+		<script>
+			function refreshPage() {
+				fetch(location.href, {cache: 'no-cache'})
+					.then(function (response) {
+						return response.text()
+					})
+					.then(function(data) {
+						document.open()
+						document.write(data)
+						document.close()
+					})
+			}
+		</script>
+	</head>
+	<body>
+		<nav>
+			<div class="nav">
+				<div class="nav-items">
+					<a href="#" onclick="refreshPage()">search</a>
+					<a href="{{ url_for('save_reviews') }}">save</a>
+					<a href="https://ceneo.pl" target="_blank" rel="noopener">ceneo</a>
+				</div>
+			</div>
+		</nav>
+		<main>
+			<section class="section search-section wrapper" id="top">
+				<h1>Type number of product that you want to get opinions about:</h1>
+				<form action="/" method="POST">
+					<input type="text" name="product_id" placeholder="Product ID" maxlength="8" />
+					<button type="submit">Search</button>
+				</form>
+				<p class="product-info">There are {{ opinions_len }} opinions about product no {{ product_id }}</p>
+			</section>
+			<section class="section table-section">
+				<table class="opinion-table">
+					<thead>
+						<tr class="table-first-row">
+							<th>id</th>
+							<th>author</th>
+							<th>recommendation</th>
+							<th>score</th>
+							<th>confirmed</th>
+							<th>opinion date</th>
+							<th>purchase date</th>
+							<th>up votes</th>
+							<th>down votes</th>
+							<th>content</th>
+							<th>cons</th>
+							<th>pros</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% if opinions != None %} {% for opinion in opinions %}
+						<tr>
+							<td>{{ opinion['opinion_id'] }}</td>
+							<td>{{ opinion['author'] }}</td>
+							<td>{{ opinion['recommendation'] }}</td>
+							<td>{{ opinion['score'] }}</td>
+							<td>{{ opinion['confirmed'] }}</td>
+							<td>{{ opinion['opinion_date'] }}</td>
+							<td>{{ opinion['purchase_date'] }}</td>
+							<td>{{ opinion['up_votes'] }}</td>
+							<td>{{ opinion['down_votes'] }}</td>
+							<td>{{ opinion['content'] }}</td>
+							{% if opinion['cons'] %}
+							<td>{% for element in opinion['cons']%} {{ element }} {% endfor %}</td>
+							{% else %}
+							<td>None</td>
+							{% endif %} {% if opinion['pros'] %}
+							<td>{% for element in opinion['pros'] %} {{ element }} {% endfor %}</td>
+							{% else %}
+							<td>None</td>
+							{% endif %}
+						</tr>
+						{% endfor %} {% endif %}
+					</tbody>
+				</table>
+			</section>
+		</main>
+	</body>
+</html>
